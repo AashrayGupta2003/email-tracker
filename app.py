@@ -66,7 +66,7 @@ def log_open_event(email_id, sequence_id, ip, user_agent):
 #     subject = "HTML Email Example with Tracking"
 #     smtp_server = "smtp.gmail.com"
 #     smtp_port = 587
-#     password = "mjvv ogzx hfzj tsqy"  # Use app-specific password for Gmail
+#     password = "*******************"  # Use app-specific password for Gmail
 
 #     msg = MIMEMultipart('mixed')
 #     msg['From'] = sender_email

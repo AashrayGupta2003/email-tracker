@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Send New Email</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #393E46;
+            color: #EEEEEE;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+
+        header {
+            background-color: #222831;
+            width: 100%;
+            text-align: center;
+            padding: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            margin: 0;
+            color: #00ADB5;
+            font-size: 2.5em;
+        }
+
+        form {
+            background-color: #222831;
+            padding: 30px 40px;
+            border-radius: 8px;
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 500px;
+            text-align: left;
+        }
+
+        form label {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: block;
+            color: #EEEEEE;
+        }
+
+        form input,
+        form textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            color: #222831;
+        }
+
+        form textarea {
+            height: 100px;
+            resize: none;
+        }
+
+        button {
+            background-color: #00ADB5;
+            color: #EEEEEE;
+            font-size: 1.2em;
+            font-weight: bold;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
+
+        button:hover {
+            background-color: #007F83;
+            transform: scale(1.05);
+        }
+
+        #statusMessage {
+            margin-top: 20px;
+            font-size: 1.1em;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Send New Email</h1>
+    </header>
+    <form id="emailForm">
+        <label for="recipient">Recipient Email:</label>
+        <input type="email" id="recipient" name="recipient" required placeholder="Enter recipient's email">
+        
+        <label for="content">Email Content:</label>
+        <textarea id="content" name="content" required placeholder="Write your email content here"></textarea>
+        
+        <button type="submit">Send Email</button>
+    </form>
+    <p id="statusMessage"></p>
+
+    <script>
+        document.getElementById("emailForm").onsubmit = async function (e) {
+            e.preventDefault();
+            const recipient = document.getElementById("recipient").value;
+            const content = document.getElementById("content").value;
+            
+            try {
+                const response = await fetch("/send_email", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ recipient, content })
+                });
+                
+                if (response.ok) {
+                    document.getElementById("statusMessage").textContent = "Email sent successfully!";
+                    document.getElementById("statusMessage").style.color = "#00ADB5";
+                } else {
+                    document.getElementById("statusMessage").textContent = "Failed to send email.";
+                    document.getElementById("statusMessage").style.color = "#F44336";
+                }
+            } catch (error) {
+                console.error("Error sending email:", error);
+                document.getElementById("statusMessage").textContent = "Error sending email.";
+                document.getElementById("statusMessage").style.color = "#F44336";
+            }
+        };
+    </script>
+</body>
+</html>

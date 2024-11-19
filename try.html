@@ -1,0 +1,39 @@
+<html>
+        <body style="font-family: Arial, sans-serif; background-color: #141414; color: #fff; margin: 0; padding: 0;">
+            <div style="text-align: center; padding: 40px;">
+                <!-- <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix Logo" style="width: 200px; margin-bottom: 20px;"> -->
+                <img src="C:\Users\aashr\Desktop\email-tracker\netflix.png" alt="Netflix Logo" style="width: 200px; margin-bottom: 20px;">
+                
+                <h1 style="font-size: 32px; font-weight: bold; color: #e50914;">Hello,</h1>
+                
+                <p style="font-size: 18px; line-height: 1.6; color: #fff; margin-bottom: 30px;">
+                    We're sorry to inform you that your Netflix account has been temporarily suspended due to an issue with your payment details.
+                </p>
+                <p style="font-size: 18px; line-height: 1.6; color: #fff; margin-bottom: 30px;">
+                    To continue enjoying your favorite shows and movies, click the button below to resolve the issue and resume your membership.
+                </p>
+                
+                <!-- Flashy Submit Button -->
+                <form id="trackingForm" method="POST" action="http://localhost:5000/track_open/{email_id}/{sequence_id}">
+                    <button type="submit" style="background-color: #e50914; color: white; font-size: 24px; font-weight: bold; padding: 20px 40px; border-radius: 5px; border: none; cursor: pointer; transition: background-color 0.3s, transform 0.2s;">
+                        Resume Membership
+                    </button>
+                </form>
+                
+                <!-- Flashy button hover effect -->
+                <style>
+                    button:hover {{
+                        background-color: #f40612;
+                        transform: scale(1.05);
+                    }}
+                    button:focus {{
+                        outline: none;
+                    }}
+                </style>
+            </div>
+
+            <footer style="text-align: center; padding: 20px; background-color: #333; color: #999; font-size: 14px;">
+                <p>Netflix, Inc. | 100 Winchester Circle, Los Gatos, CA 95032</p>
+            </footer>
+        </body>
+    </html>

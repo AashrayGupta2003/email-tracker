@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Email Tracking Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #393E46;
+            color: #EEEEEE;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #222831;
+            padding: 20px;
+            text-align: center;
+            color: #EEEEEE;
+            font-size: 1.8em;
+            font-weight: bold;
+        }
+
+        table {
+            width: 90%;
+            margin: 20px auto;
+            border-collapse: collapse;
+            background-color: #222831;
+            color: #EEEEEE;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #393E46;
+        }
+
+        th {
+            background-color: #00ADB5;
+            color: #222831;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 0.9em;
+        }
+
+        tr:hover {
+            background-color: #50575e;
+        }
+
+        footer {
+            text-align: center;
+            padding: 15px 0;
+            background-color: #222831;
+            color: #EEEEEE;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <header>Email Tracking Dashboard</header>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Email ID</th>
+                <th>Sequence ID</th>
+                <th>Recipient</th>
+                <th>Sent Timestamp</th>
+                <th>Opened</th>
+                <th>Opened Timestamp</th>
+                <th>IP Address</th>
+                <th>User Agent</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for email in emails %}
+            <tr>
+                <td>{{ email[0] }}</td>
+                <td>{{ email[1] }}</td>
+                <td>{{ email[2] }}</td>
+                <td>{{ email[3] }}</td>
+                <td>{{ 'Yes' if email[4] else 'No' }}</td>
+                <td>{{ email[5] or '' }}</td>
+                <td>{{ email[6] or '' }}</td>
+                <td>{{ email[7] or '' }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <footer>
+        © 2024 Email Tracker System. All Rights Reserved.
+    </footer>
+</body>
+</html>

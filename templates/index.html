@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome to Email Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #393E46;
+            color: #EEEEEE;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #222831;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            color: #00ADB5;
+        }
+
+        nav {
+            margin: 30px auto;
+            text-align: center;
+        }
+
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        nav ul li {
+            display: inline-block;
+            margin: 10px;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #EEEEEE;
+            background-color: #00ADB5;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        nav ul li a:hover {
+            background-color: #007F83;
+            transform: scale(1.05);
+        }
+
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            padding: 20px;
+            background-color: #222831;
+            color: #EEEEEE;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to the Email Tracking System</h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/emails">View Email Dashboard</a></li>
+            <li><a href="/send_email">Send New Email</a></li>
+        </ul>
+    </nav>
+    <footer>
+        <p>&copy; 2024 Email Tracker. All rights reserved.</p>
+    </footer>
+</body>
+</html>

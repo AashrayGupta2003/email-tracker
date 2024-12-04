@@ -1,110 +1,50 @@
 from flask import Flask, request, send_file, jsonify, render_template
 import sqlite3
 import datetime
+from pytz import timezone 
 import smtplib
+import requests
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 app = Flask(__name__)
 
+def get_location(ip_address):
+    try:
+        # Replace `YOUR_API_KEY` with your API key if required
+        response = requests.get(f"https://api.iplocation.net/?ip={ip_address}")
+        if response.status_code == 200:
+            data = response.json()
+            # Concatenate city and country for a readable format
+            return f"{data.get('country_name', 'Unknown')}, {data.get('isp', 'Unknown')}"
+    except Exception as e:
+        print(f"Error fetching location for IP {ip_address}: {e}")
+    return "Unknown"
+
 # Function to log email open events
-def log_open_event(email_id, sequence_id, ip, user_agent):
+def log_open_event(email_id, sequence_id, ip, location, user_agent):
     conn = sqlite3.connect("emails.db")
     cursor = conn.cursor()
     cursor.execute("""
         UPDATE emails
-        SET opened = 1, opened_timestamp = ?, ip_address = ?, user_agent = ?
-        WHERE email_id = ? AND sequence_id = ?
-    """, (datetime.datetime.now(), ip, user_agent, email_id, sequence_id))
+        SET opened = 1, opened_timestamp = ?, ip_address = ?, location = ?, user_agent = ?
+        WHERE recipient = ? AND sequence_id = ?
+    """, (datetime.datetime.now(timezone("Asia/Kolkata")).strftime('%d-%m-%Y %H:%M:%S'), ip, location, user_agent, email_id, sequence_id))
     conn.commit()
     conn.close()
 
-# Function to send email with tracking pixel
-# def send_html_email(email_id, sequence_id, recipient_email, plain_text_content):
-#     sender_email = "chandrayaan2iit@gmail.com"
-#     subject = "HTML Email Example with Tracking"
-#     smtp_server = "smtp.gmail.com"
-#     smtp_port = 587
-#     password = "*******************"  # Use app-specific password for Gmail
-
-#     msg = MIMEMultipart('mixed')
-#     msg['From'] = sender_email
-#     msg['To'] = recipient_email
-#     msg['Subject'] = subject
-
-#     # Tracking pixel URL with email_id and sequence_id
-#     # tracking_pixel_url = f"http://localhost:5000/track_pixel/{email_id}/{sequence_id}"
-#     tracking_pixel_url = f"https://raw.githubusercontent.com/AashrayGupta2003/email-tracker/refs/heads/main/sample_img.jpeg"
-
-#     # HTML content with embedded tracking pixel
-#     html_content = f"""
-#     <!DOCTYPE html>
-#     <html lang="en">
-#     <head>
-#         <meta charset="UTF-8">
-#         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-#         <title>Email with Tracking Pixel</title>
-#     </head>
-#     <body>
-#         <p>{plain_text_content}</p> <!-- Display the plain text content in the body -->
-#         <img src="{tracking_pixel_url}" width="100" height="100" style="display:none;">
-#     </body>
-#     </html>
-#     """
-
-#     # msg.attach(MIMEText(plain_text_content, 'plain'))
-#     msg.attach(MIMEText(html_content, 'html'))
-
-#     with smtplib.SMTP(smtp_server, smtp_port) as server:
-#         server.starttls()  # Secure the connection
-#         server.login(sender_email, password)
-#         server.sendmail(sender_email, recipient_email, msg.as_string())
-#     print("Email sent successfully!")
-
-# def send_html_email(email_id, sequence_id, recipient_email, plain_text_content):
-#     sender_email = "chandrayaan2iit@gmail.com"
-#     subject = "HTML Email Example with Tracking"
-#     smtp_server = "smtp.gmail.com"
-#     smtp_port = 587
-#     password = "*******************"  # Use app-specific password for Gmail
-
-#     msg = MIMEMultipart('mixed')
-#     msg['From'] = sender_email
-#     msg['To'] = recipient_email
-#     msg['Subject'] = subject
-
-#     # Hidden form for tracking
-#     tracking_form = f'''
-#     <html>
-#         <body>
-#             <form id="trackingForm" method="POST" action="http://localhost:5000/track_open/{email_id}/{sequence_id}">
-#                 <input type="hidden" name="tracking" value="1">
-#             </form>
-#             <script>
-#                 document.getElementById('trackingForm').submit();
-#             </script>
-#             <p>{plain_text_content}</p>
-#         </body>
-#     </html>
-#     '''
-
-#     msg.attach(MIMEText(tracking_form, 'html'))
-
-#     with smtplib.SMTP(smtp_server, smtp_port) as server:
-#         server.starttls()  # Secure the connection
-#         server.login(sender_email, password)
-#         server.sendmail(sender_email, recipient_email, msg.as_string())
-#     print("Email sent successfully!")
 
 def send_html_email(email_id, sequence_id, recipient_email, plain_text_content):
     sender_email = "chandrayaan2iit@gmail.com"
+    sender_email = email_id
+    custom_sender_name = "Netflix Support"
     subject = "Your Netflix Membership Has Been Suspended"
     smtp_server = "smtp.gmail.com"
     smtp_port = 587
-    password = "************************"  # Use app-specific password for Gmail 
+    password = "mjvv ogzx hfzj tsqy"  # Use app-specific password for Gmail
 
     msg = MIMEMultipart('mixed')
-    msg['From'] = sender_email
+    msg['From'] = f"{custom_sender_name} <{sender_email}>"
     msg['To'] = recipient_email
     msg['Subject'] = subject
 
@@ -113,7 +53,7 @@ def send_html_email(email_id, sequence_id, recipient_email, plain_text_content):
     <html>
         <body style="font-family: Arial, sans-serif; background-color: #141414; color: #fff; margin: 0; padding: 0;">
             <div style="text-align: center; padding: 40px;">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Netflix_2015_logo.svg" alt="Netflix Logo" style="width: 200px; margin-bottom: 20px;">
+                <img src="http://98.70.55.159:8080/static/images/netflix.png" alt="Netflix Logo" style="width: 250px; margin-bottom: 20px;">
                 
                 <h1 style="font-size: 32px; font-weight: bold; color: #e50914;">Hello,</h1>
                 
@@ -125,11 +65,20 @@ def send_html_email(email_id, sequence_id, recipient_email, plain_text_content):
                 </p>
                 
                 <!-- Flashy Submit Button -->
-                <form id="trackingForm" method="POST" action="http://localhost:5000/track_open/{email_id}/{sequence_id}">
+                <!--
+                <form id="trackingForm" method="POST" action="https://98.70.55.159:8080/track_open/{email_id}/{sequence_id}">
                     <button type="submit" style="background-color: #e50914; color: white; font-size: 24px; font-weight: bold; padding: 20px 40px; border-radius: 5px; border: none; cursor: pointer; transition: background-color 0.3s, transform 0.2s;">
                         Resume Membership
                     </button>
                 </form>
+                -->
+
+                <a href="http://98.70.55.159:8080/track_open/{recipient_email}/{sequence_id}">
+                    <button type="submit" style="background-color: #e50914; color: white; font-size: 24px; font-weight: bold; padding: 20px 40px; border-radius: 5px; border: none; cursor: pointer; transition: background-color 0.3s, transform 0.2s;">
+                        Resume Membership
+                    </button>
+                </a>
+
                 
                 <!-- Flashy button hover effect -->
                 <style>
@@ -151,6 +100,7 @@ def send_html_email(email_id, sequence_id, recipient_email, plain_text_content):
     '''
 
     msg.attach(MIMEText(tracking_form, 'html'))
+    msg.attach(MIMEText(plain_text_content))
 
     with smtplib.SMTP(smtp_server, smtp_port) as server:
         server.starttls()  # Secure the connection
@@ -163,24 +113,15 @@ def send_html_email(email_id, sequence_id, recipient_email, plain_text_content):
 def home():
     return render_template("index.html")
 
-# # Route to log email opens
-# @app.route("/track_pixel/<email_id>/<sequence_id>")
-# def track_pixel(email_id, sequence_id):
-#     ip = request.remote_addr
-#     user_agent = request.headers.get("User-Agent")
-    
-#     log_open_event(email_id, sequence_id, ip, user_agent)
-    
-#     # return send_file("1x1_pixel.png", mimetype="image/png")
-#     return send_file("sample_img.jpeg", mimetype="image/png")
 
 @app.route("/track_open/<email_id>/<sequence_id>", methods=["GET", "POST"])
 def track_open(email_id, sequence_id):
     ip = request.remote_addr
     user_agent = request.headers.get("User-Agent")
+    location = get_location(ip)
     
     # Log open event to database
-    log_open_event(email_id, sequence_id, ip, user_agent)
+    log_open_event(email_id, sequence_id, ip, location, user_agent)
     
     # Return a simple 204 response (empty response with no content)
     return '', 204  # No content, since we're just logging the open event via form submission
@@ -196,13 +137,12 @@ def send_email():
     recipient = data.get("recipient")
     content = data.get("content")  # Get the email text content from the request
 
-    # Assign email_id as the recipient’s email address
-    email_id = recipient
-    
+    email_id = "chandrayaan2iit@gmail.com"
+
     # Check if this email_id already exists and get the latest sequence_id
     conn = sqlite3.connect("emails.db")
     cursor = conn.cursor()
-    cursor.execute("SELECT MAX(sequence_id) FROM emails WHERE email_id = ?", (email_id,))
+    cursor.execute("SELECT MAX(sequence_id) FROM emails WHERE recipient = ?", (recipient,))
     result = cursor.fetchone()
     sequence_id = (result[0] + 1) if result[0] is not None else 1  # Increment if exists, else start at 1
 
@@ -210,7 +150,7 @@ def send_email():
     cursor.execute("""
         INSERT INTO emails (email_id, sequence_id, recipient, sent_timestamp, opened)
         VALUES (?, ?, ?, ?, 0)
-    """, (email_id, sequence_id, recipient, datetime.datetime.now()))
+    """, (email_id, sequence_id, recipient, datetime.datetime.now(timezone("Asia/Kolkata")).strftime('%d-%m-%Y %H:%M:%S')))
     conn.commit()
     conn.close()
     
@@ -226,7 +166,7 @@ def get_emails():
     conn = sqlite3.connect("emails.db")
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT email_id, sequence_id, recipient, sent_timestamp, opened, opened_timestamp, ip_address, user_agent
+        SELECT sno, email_id, sequence_id, recipient, sent_timestamp, opened, opened_timestamp, ip_address, location, user_agent
         FROM emails
     """)
     emails = cursor.fetchall()
@@ -235,34 +175,6 @@ def get_emails():
     # Pass the data to the template
     return render_template("email_dashboard.html", emails=emails)
 
-
-# @app.route("/emails")
-# def get_emails():
-#     conn = sqlite3.connect("emails.db")
-#     cursor = conn.cursor()
-#     cursor.execute("""
-#         SELECT email_id, sequence_id, recipient, sent_timestamp, opened, opened_timestamp, ip_address, user_agent
-#         FROM emails
-#     """)
-#     emails = cursor.fetchall()
-#     conn.close()
-    
-#     email_list = [
-#         {
-#             "email_id": row[0],
-#             "sequence_id": row[1],
-#             "recipient": row[2],
-#             "sent_timestamp": row[3],
-#             "opened": bool(row[4]),
-#             "opened_timestamp": row[5],
-#             "ip_address": row[6],
-#             "user_agent": row[7]
-#         }
-#         for row in emails
-#     ]
-    
-#     return jsonify(email_list)
-
     
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False, host="0.0.0.0", port=8080)

@@ -41,7 +41,7 @@ def send_html_email(email_id, sequence_id, recipient_email, plain_text_content):
     subject = "Your Netflix Membership Has Been Suspended"
     smtp_server = "smtp.gmail.com"
     smtp_port = 587
-    password = "mjvv ogzx hfzj tsqy"  # Use app-specific password for Gmail
+    password = "***********************"  # Use app-specific password for Gmail
 
     msg = MIMEMultipart('mixed')
     msg['From'] = f"{custom_sender_name} <{sender_email}>"
